@@ -75,3 +75,49 @@ class Queue {
     return this.storage.length === 0;
   }
 }
+
+const breadthfirstSearch = (graph, source, destination) => {
+  const bfsInfo = [];
+  for (let i = 0; i < graph.length; i++) {
+    bfsInfo.push({
+      distance: null,
+      predecessor: null
+    })
+  }
+  bfsInfo[source].distance = 0;
+  const queue = new Queue();
+  queue.enqueue(source);
+
+  while (!queue.isEmpty()){
+    const vertex = queue.dequeue();
+    if (vertex === destination) {
+      console.log(`You made it in ${bfsInfo[vertex].distance} move(s)!  Here's your path`);
+      return;
+    }
+    for (let i = 0; i < graph[vertex].length; i++) {
+      const neighbour = graph[vertex][i];
+      if (!bfsInfo[neighbour].distance) {
+        bfsInfo[neighbour].distance = bfsInfo[vertex].distance + 1;
+        bfsInfo[neighbour].predecessor = vertex;
+        queue.enqueue(neighbour);
+      }
+    }
+  }
+}
+
+class Knight {
+  constructor() {}
+
+
+  knightMoves(start, end) {
+    const source = getIndex(start[0], start[1]);
+    const destination = getIndex(end[0], end[1]);
+    
+  }
+
+}
+const knight = new Knight();
+// knight.knightMoves([0, 0], [1, 2]);
+// knight.knightMoves([3, 3], [0, 0]);
+knight.knightMoves([3, 3], [4, 3]);
+// knight.knightMoves([0, 0], [7, 7]);
