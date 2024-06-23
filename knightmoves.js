@@ -1,7 +1,9 @@
 class Chessboard {
+
   constructor() {
     this.chessboard = this.buildBoard();
   }
+
   buildBoard = () => {
     const board = [];
     for (let row = 0; row < 8; row++) {
@@ -25,18 +27,23 @@ class Chessboard {
   };
 }
 
-class graph {
+class Graph {
+  
+  constructor() {
+    this.graph = this.buildAdjacenyList();
+  }
 
-  // chessboard = new Chessboard();
-  buildAdjacenyList = (board = new Chessboard().buildBoard()) => {
+  buildAdjacenyList = (boardObj = new Chessboard()) => {
+    const knight = new Knight();
+    const chessboard = boardObj.chessboard;
     const adjacenyList = [];
-    for (let i = 0; i < board.length; i++) {
+    for (let i = 0; i < chessboard.length; i++) {
       const neighbours = [];
-      const nextMoves = getLegalMoves(board[i][0], board[i][1]);
+      const nextMoves = knight.getLegalMoves(chessboard[i][0], chessboard[i][1]);
       for (let i = 0; i < nextMoves.length; i++) {
         const x = nextMoves[i][0];
         const y = nextMoves[i][1];
-        const index = getIndex(x, y);
+        const index = boardObj.getIndex(x, y);
         neighbours.push(index);
       }
       adjacenyList[i] = neighbours;
@@ -47,7 +54,7 @@ class graph {
   breadthfirstSearch = (
     source,
     destination,
-    graph = this.breadthfirstSearch()
+    graph = this.graph
   ) => {
     const bfsInfo = [];
     for (let i = 0; i < graph.length; i++) {
@@ -101,6 +108,7 @@ class Queue {
 class Knight {
 
   getLegalMoves = (x, y, boardSize = 8) => {
+    const board = new Chessboard();
     const possibleMoves = [
       [-1, 2],
       [-1, -2],
@@ -112,12 +120,12 @@ class Knight {
       [1, 2],
     ];
     const nextMoves = [];
-    for (move of possibleMoves) {
+    for (const move of possibleMoves) {
       const dx = x + move[0];
       const dy = y + move[1];
       if (
-        this.confirmLegalCoordinates(dx) &&
-        this.confirmLegalCoordinates(dy)
+        board.confirmLegalCoordinates(dx) &&
+        board.confirmLegalCoordinates(dy)
       ) {
         nextMoves.push([dx, dy]);
       }
@@ -126,14 +134,15 @@ class Knight {
   };
 
   knightMoves(start, end) {
-    const source = getIndex(start[0], start[1]);
-    const destination = getIndex(end[0], end[1]);
-    breadthfirstSearch(source, destination);
+    const board = new Chessboard();
+    const graph = new Graph();
+    const source = board.getIndex(start[0], start[1]);
+    const destination = board.getIndex(end[0], end[1]);
+    graph.breadthfirstSearch(source, destination);
   };
 }
 const knight = new Knight();
-// knight.knightMoves([0, 0], [1, 2]);
-// knight.knightMoves([3, 3], [0, 0]);
-// knight.knightMoves([3, 3], [4, 3]);
-// knight.knightMoves([0, 0], [7, 7]);
-console.log(new graph());
+knight.knightMoves([0, 0], [1, 2]);
+knight.knightMoves([3, 3], [0, 0]);
+knight.knightMoves([3, 3], [4, 3]);
+knight.knightMoves([0, 0], [7, 7]);
