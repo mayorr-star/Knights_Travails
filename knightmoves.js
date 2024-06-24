@@ -1,5 +1,4 @@
 class Chessboard {
-
   constructor() {
     this.chessboard = this.buildBoard();
   }
@@ -28,7 +27,6 @@ class Chessboard {
 }
 
 class Graph {
-  
   constructor() {
     this.graph = this.buildAdjacenyList();
   }
@@ -39,7 +37,10 @@ class Graph {
     const adjacenyList = [];
     for (let i = 0; i < chessboard.length; i++) {
       const neighbours = [];
-      const nextMoves = knight.getLegalMoves(chessboard[i][0], chessboard[i][1]);
+      const nextMoves = knight.getLegalMoves(
+        chessboard[i][0],
+        chessboard[i][1]
+      );
       for (let i = 0; i < nextMoves.length; i++) {
         const x = nextMoves[i][0];
         const y = nextMoves[i][1];
@@ -51,11 +52,7 @@ class Graph {
     return adjacenyList;
   };
 
-  breadthfirstSearch = (
-    source,
-    destination,
-    graph = this.graph
-  ) => {
+  breadthfirstSearch = (source, destination, graph = this.graph) => {
     const bfsInfo = [];
     for (let i = 0; i < graph.length; i++) {
       bfsInfo.push({
@@ -65,22 +62,40 @@ class Graph {
     }
     bfsInfo[source].distance = 0;
     const queue = new Queue();
+    const board = new Chessboard();
     queue.enqueue(source);
 
     while (!queue.isEmpty()) {
       const vertex = queue.dequeue();
-      if (vertex === destination) {
-        console.log(
-          `You made it in ${bfsInfo[vertex].distance} move(s)!  Here's your path:`
-        );
-        return;
-      }
       for (let i = 0; i < graph[vertex].length; i++) {
         const neighbour = graph[vertex][i];
-        if (!bfsInfo[neighbour].distance) {
+
+        if (neighbour === destination) {
           bfsInfo[neighbour].distance = bfsInfo[vertex].distance + 1;
           bfsInfo[neighbour].predecessor = vertex;
-          queue.enqueue(neighbour);
+          const knight = new Knight();
+          const chessboard = board.buildBoard();
+          let path = [];
+          knight.constructPath(
+            chessboard,
+            bfsInfo,
+            bfsInfo[neighbour],
+            neighbour,
+            path
+          );
+          path.reverse();
+          path.unshift(chessboard[source])
+          console.log(
+            `You made it in ${bfsInfo[neighbour].distance} move(s)!  Here's your path:`
+          );
+          console.log(path)
+          return path;
+        } else {
+          if (bfsInfo[neighbour].distance === null) {
+            bfsInfo[neighbour].distance = bfsInfo[vertex].distance + 1;
+            bfsInfo[neighbour].predecessor = vertex;
+            queue.enqueue(neighbour);
+          }
         }
       }
     }
@@ -106,7 +121,6 @@ class Queue {
 }
 
 class Knight {
-
   getLegalMoves = (x, y, boardSize = 8) => {
     const board = new Chessboard();
     const possibleMoves = [
@@ -139,10 +153,23 @@ class Knight {
     const source = board.getIndex(start[0], start[1]);
     const destination = board.getIndex(end[0], end[1]);
     graph.breadthfirstSearch(source, destination);
-  };
+  }
+
+  constructPath(board, infoArr, item, index, newArr) {
+    if (item.predecessor === null) return;
+    newArr.push(board[index]);
+    this.constructPath(
+      board,
+      infoArr,
+      infoArr[item.predecessor],
+      item.predecessor,
+      newArr
+    );
+  }
 }
-const knight = new Knight();
-knight.knightMoves([0, 0], [1, 2]);
-knight.knightMoves([3, 3], [0, 0]);
-knight.knightMoves([3, 3], [4, 3]);
-knight.knightMoves([0, 0], [7, 7]);
+// const knight = new Knight();
+// knight.knightMoves([0, 0], [1, 2]);
+// knight.knightMoves([0, 0], [3, 3]);
+// knight.knightMoves([3, 3], [0, 0]);
+// knight.knightMoves([3, 3], [4, 3]);
+// knight.knightMoves([0, 0], [7, 7]);
